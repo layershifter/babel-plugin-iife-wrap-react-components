@@ -32,11 +32,16 @@ function createWrappingIIFE(
 }
 
 function findReferencedStatements(
-  node: t.Node,
+  id: NodePath<t.Identifier>,
   statements: NodePath<t.ExpressionStatement>[]
 ) {
   return statements.filter(
-    (statement) => statement.node && t.isReferenced(node, statement.node)
+    (statement) =>
+      statement.node &&
+      statement.scope.hasOwnBinding(id.node.name) &&
+      id.node.name ===
+        (((statement.node.expression as t.AssignmentExpression)
+          .left as t.MemberExpression).object as t.Identifier).name
   );
 }
 
@@ -83,7 +88,7 @@ const babelPlugin: A = () => {
 
               if (id) {
                 const referencedStatements = findReferencedStatements(
-                  arrowFunctionPath.node,
+                  id,
                   statements
                 );
 
@@ -116,7 +121,7 @@ const babelPlugin: A = () => {
 
             if (id.node) {
               const referencedStatements = findReferencedStatements(
-                functionPath.node,
+                id,
                 statements
               );
 
