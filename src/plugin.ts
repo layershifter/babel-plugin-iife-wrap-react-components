@@ -135,12 +135,40 @@ const babelPlugin: A = () => {
                 if (t.isExportDefaultDeclaration(functionPath.parentPath)) {
                   functionPath.parentPath.replaceWithMultiple([
                     wrappingIIFE,
-                    t.exportDefaultDeclaration(t.cloneNode(id.node as t.Identifier)),
+                    t.exportDefaultDeclaration(
+                      t.cloneNode(id.node as t.Identifier)
+                    ),
                   ]);
                 } else {
                   functionPath.replaceWith(wrappingIIFE);
                 }
 
+                referencedStatements.forEach((statement) => {
+                  statement.remove();
+                });
+              }
+            }
+          },
+
+          VariableDeclarator(declaratorPath) {
+            const id = declaratorPath.get("id");
+
+            if (id.node) {
+              const referencedStatements = findReferencedStatements(
+                id as NodePath<t.Identifier>,
+                statements
+              );
+
+              if (referencedStatements.length > 0) {
+                const wrappingIIFE = createWrappingIIFE(
+                  id as NodePath<t.Identifier>,
+                  t.variableDeclaration("const", [
+                    t.cloneNode(declaratorPath.node),
+                  ]),
+                  referencedStatements
+                );
+
+                declaratorPath.replaceWith(wrappingIIFE.declarations[0]);
                 referencedStatements.forEach((statement) => {
                   statement.remove();
                 });
