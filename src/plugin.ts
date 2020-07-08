@@ -121,7 +121,7 @@ const babelPlugin: A = () => {
 
             if (id.node) {
               const referencedStatements = findReferencedStatements(
-                id,
+                id as NodePath<t.Identifier>,
                 statements
               );
 
@@ -132,7 +132,15 @@ const babelPlugin: A = () => {
                   referencedStatements
                 );
 
-                functionPath.replaceWith(wrappingIIFE);
+                if (t.isExportDefaultDeclaration(functionPath.parentPath)) {
+                  functionPath.parentPath.replaceWithMultiple([
+                    wrappingIIFE,
+                    t.exportDefaultDeclaration(t.cloneNode(id.node as t.Identifier)),
+                  ]);
+                } else {
+                  functionPath.replaceWith(wrappingIIFE);
+                }
+
                 referencedStatements.forEach((statement) => {
                   statement.remove();
                 });
