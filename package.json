@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-iife-wrap-react-components",
-  "version": "1.0.0-3",
+  "version": "1.0.0-4",
   "description": "A plugin that wraps React components to IIFE to avoid side-effects for Terser.",
   "engines": {
     "node": ">=10"
