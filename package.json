@@ -6,6 +6,7 @@
     "node": ">=10"
   },
   "main": "lib/plugin.js",
+  "files": ["lib"],
   "scripts": {
     "build": "babel src --out-dir lib --source-maps inline --extensions .ts,.tsx",
     "pretest": "tsc --noEmit",
