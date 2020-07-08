@@ -41,11 +41,13 @@ function findReferencedStatements(
 }
 
 function isStaticProperty(path: NodePath<t.ExpressionStatement>): boolean {
-  const expression = path.get("expression");
+  if (t.isProgram(path.parentPath)) {
+    const expression = path.get("expression");
 
-  if (expression.isAssignmentExpression()) {
-    if (t.isMemberExpression(expression.get("left"))) {
-      return true;
+    if (expression.isAssignmentExpression()) {
+      if (t.isMemberExpression(expression.get("left"))) {
+        return true;
+      }
     }
   }
 
@@ -62,6 +64,7 @@ const babelPlugin: A = () => {
 
         programPath.traverse({
           ExpressionStatement(statementPath) {
+            // console.log(programPath.node)
             if (isStaticProperty(statementPath)) {
               statements.push(statementPath);
             }
