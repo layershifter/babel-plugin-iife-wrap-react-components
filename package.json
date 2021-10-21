@@ -6,6 +6,10 @@
     "node": ">=10"
   },
   "main": "lib/plugin.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/layershifter/babel-plugin-iife-wrap-react-components.git"
+  },
   "files": [
     "lib"
   ],
